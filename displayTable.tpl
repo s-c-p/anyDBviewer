@@ -13,15 +13,21 @@
 	% end
     <table>
 	<thead>
-		% for aField in table_head:
-			<td>{{ aField }}</td>
-		% end
+    % for aField in table_head:
+		<td>{{ aField }}</td>
+	% end
 	</thead>
-	<code>
-		<pre>
+	<tbody>
+    for aRow in table_body:
+        <tr>
+        for _ in aRow:
+            <td> {{ _ }} </td>
+        end
+		</tr
+    end
 			{{ table_body }}
 		</pre>
-	</code>
+	</codettbody>
     </table>
 </body>
 </html>
