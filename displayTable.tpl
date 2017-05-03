@@ -13,7 +13,7 @@
 	% end
 	<ul>
 		% for _ in table_head:
-			<li>_</li>
+			<li>{{ _ }}</li>
 		% end
 	</ul>
 	<code>

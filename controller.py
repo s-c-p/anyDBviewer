@@ -31,12 +31,11 @@ def displayTable():
 	chunkSize = int(args.chunkSize)
 	filePath = utils.readPref("databaseFile")
 
-	col_names = bg._getColNames(filePath, tableName)
-	sr_no = bg._getSrNoField(filePath, tableName, col_names)
+	col_names = bg.getColNames(filePath, tableName)
 
 	to = chunkSize*pageNum
 	frm = to - (chunkSize-1)
-	data = bg.getRows(filePath, tableName, sr_no, frm, to)
+	data = bg.getRows(filePath, tableName, col_names, frm, to)
 	isThisLastPage = True if len(data) < to-frm+1 else False
 	isThisFirstPage = True if pageNum == 1 else False
 

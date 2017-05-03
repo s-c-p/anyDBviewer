@@ -31,36 +31,44 @@ def test():
 		if e:	print("Appropriate error was raised")
 	return
 
-def _getColNames(filePath, tableName):
+def getColNames(filePath, tableName):
 	# bit.ly/2p53vG6
 	# bit.ly/17NgHqj
 	# bit.ly/2pwbDCP
-	with sqlite3.connect(filePath) as conn:
-		cur = conn.cursor()
-		cur.execute("SELECT * FROM {} LIMIT 1;".format(tableName))				# NOTE: sql injection vulnerablity, but using ? style instead of {} gave sqlite3.OperationalError
-		col_names = [description_tuple[0] \
-			for description_tuple in cur.description]
-	return col_names
+    with sqlite3.connect(filePath) as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM {} LIMIT 1;".format(tableName))              # NOTE: sql injection vulnerablity, but using ? style instead of {} gave sqlite3.OperationalError
+        col_names = [description_tuple[0] \
+            for description_tuple in cur.description]
+    return col_names
 
 def _getSrNoField(filePath, tableName, fields):
-	# we need something like sr_no for using BETWEEN clause (which is required
-	# for pagination. so we use schema's output and detect which field has
-	# been declared as primary key
-	# NOTE: fields = _getColNames(filePath, tableName)
-	schema = sqlCommandRunner(filePath, ".schema {}".format(tableName))
-	schema = schema.replace(";", "\n").replace(",", "\n")						# NOTE: in case schema is written in min form without any whitespaces
-	schema = schema.splitlines()
-	for aLine in schema:
-		if "PRIMARY KEY" in aLine.upper():
-			break
-	for aField in fields:
-		if aField in aLine:
-			sr_no = aField
-			return sr_no
-	special_error_message = "Fucksi: a table without sr no kind of field \
-		encountered i.e. no field was declared as PRIMARY KEY. This is okay,\
-		see bit.ly/2pwjZdK and bit.ly/2qy3Frn"
-	raise RuntimeError(special_error_message)
+    # we need something like sr_no for using BETWEEN clause (which is required
+    # for pagination. so we use schema's output and detect which field has
+    # been declared as primary key
+    # NOTE: fields = getColNames(filePath, tableName)
+    schema = sqlCommandRunner(filePath, ".schema {}".format(tableName))
+    schema = schema.replace(";", "\n").replace(",", "\n")                       # NOTE: in case schema is written in min form without any whitespaces
+    schema = schema.splitlines()
+    for aLine in schema:
+        if "PRIMARY KEY" in aLine.upper():
+            break
+    for aField in fields:
+        if aField in aLine:
+            sr_no = aField
+            return sr_no
+    special_error_message = "Fucksi: a table without sr no kind of field \
+        encountered i.e. no field was declared as PRIMARY KEY. This is okay,\
+        see bit.ly/2pwjZdK and bit.ly/2qy3Frn"
+    raise RuntimeError(special_error_message)
+
+def getRows(dbFile, tableName, col_names, frm, to):
+    pk_field = _getSrNoField(dbFile, tableName, col_names)
+    with sqlite3.connect(dbFile) as conn:
+        cur = conn.cursor()
+        x = cur.execute("SELECT * FROM {} WHERE {} BETWEEN ? AND ?;".format(tableName, pk_field), [frm, to])
+        data = x.fetchall()
+    return data
 
 if __name__ == '__main__':
 	test()
