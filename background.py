@@ -108,3 +108,11 @@ if __name__ == '__main__':
 # no reason why this should cause the highlighter to break
 #
 # a: lambda x=None: {key: val for key, val in (x if x is not None else [])}=42
+
+
+
+
+
+python is wrong in reporting PRIMARY KEY of "playlist_track"
+properly parse the output of ".schema tableName"
+	if CONSTRAIN and PRIMARY KEY occour in same line call special func
