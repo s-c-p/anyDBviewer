@@ -20,7 +20,7 @@ def chooseTable():
 	utils.writePref(databaseFile=filePath)
 	tables = bg.sqlCommandRunner(filePath, ".tables")
 	tables = tables.split()
-	return bottle.template("chooseTable"
+	return bottle.template("view/chooseTable"
 		, tableList=tables)
 
 @bottle.route("/displayTable")
@@ -39,7 +39,7 @@ def displayTable():
 	isThisLastPage = True if len(data) < to-frm+1 else False
 	isThisFirstPage = True if pageNum == 1 else False
 
-	return bottle.template("displayTable"
+	return bottle.template("view/displayTable"
 		, tableName=tableName
 		, chunkSize=chunkSize
 		, pageNum=pageNum
