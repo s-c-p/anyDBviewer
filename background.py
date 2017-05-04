@@ -43,8 +43,20 @@ def getColNames(filePath, tableName):
 	return col_names
 
 def _getSrNoField(filePath, tableName, fields):
+	"""
+		this function fails in case tableName="playlist_track"
+		see its schema, it has 2 columns working togather as PRIMARY KEY
+		now goto index page, point path to the famous "chinook.db"
+		selet table "playlist_track" and chunkSize 10 and proceed
+		DAYUMNN--- more than 10 results
+		see-- bit.ly/2pI1Bge
+		ANS-- use cur.execute, then ans = 
+			[cur.fetchone for _ in range(chunkSize)]
+		store the value of ans[0] & ans[-1] and use it as offset info for
+		prev. and next fetch respectively
+	"""
 	# we need something like sr_no for using BETWEEN clause (which is required
-	# for pagination. so we use schema's output and detect which field has
+	# for pagination), so we use schema's output and detect which field has
 	# been declared as primary key
 	# NOTE: fields = getColNames(filePath, tableName)
 	schema = sqlCommandRunner(filePath, ".schema {}".format(tableName))
