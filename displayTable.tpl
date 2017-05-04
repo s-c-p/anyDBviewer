@@ -11,21 +11,21 @@
 	% if not isThisLastPage:
 		<a href="?tableName={{ tableName }}&chunkSize={{ chunkSize }}&pageNum={{ pageNum+1 }}">Next</a>
 	% end
-    <table>
+	<table>
 	<thead>
-    % for aField in table_head:
+	% for aField in table_head:
 		<td>{{ aField }}</td>
 	% end
 	</thead>
 	<tbody>
-    % for aRow in table_body:
-        <tr>
-        % for _ in aRow:
-            <td> {{ _ }} </td>
-        % end
+	% for aRow in table_body:
+		<tr>
+		% for _ in aRow:
+			<td> {{ _ }} </td>
+		% end
 		</tr>
 	% end
-    </tbody>
-    </table>
+	</tbody>
+	</table>
 </body>
 </html>
