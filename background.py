@@ -1,7 +1,8 @@
 import sys
 import sqlite3
 import subprocess
-from collections import namedtuple
+
+import utils
 
 class SQLError(Exception):
 	def __init__(self, err=""):
@@ -54,6 +55,11 @@ def _getSrNoField(filePath, tableName, fields):
 			[cur.fetchone for _ in range(chunkSize)]
 		store the value of ans[0] & ans[-1] and use it as offset info for
 		prev. and next fetch respectively
+		UPDATE:
+		I tried implementing the above linked page but it returns bad results
+		if I pass all records (sans string/blob ones) as seen in getRows2()
+		-- getting accurate pagination again comes down to knowing correct
+		primary key
 	"""
 	# we need something like sr_no for using BETWEEN clause (which is required
 	# for pagination), so we use schema's output and detect which field has
@@ -69,10 +75,23 @@ def _getSrNoField(filePath, tableName, fields):
 		if aField in aLine:
 			sr_no = aField
 			return sr_no
-	special_error_message = "Fucksi: a table without sr no kind of field \
+	special_error_message = "Oops: a table without sr no kind of field \
 		encountered i.e. no field was declared as PRIMARY KEY. This is okay,\
 		see bit.ly/2pwjZdK and bit.ly/2qy3Frn"
 	raise RuntimeError(special_error_message)
+
+def getRows2(dbFile, tableName, col_names, frm, to):
+	pk_field = _getSrNoField(dbFile, tableName, col_names)
+	prev_record = utils.readPref("prev_record")
+	SQL = "SELECT * FROM {} WHERE ".format(tableName)
+	SQL+= "AND".join([col_names[i] + " > " + prev_record[i] for i in range(len(col_names))])
+	SQL+= "ORDER BY " + pk_field
+	SQL+= "LIMIT " + str(to-frm+1)
+	with sqlite3.connect(dbFile) as conn:
+		cur = conn.cursor()
+		x = cur.execute("SELECT * FROM {} WHERE {} BETWEEN ? AND ?;".format(tableName, pk_field), [frm, to])
+	utils.writePref(prev_record=prev_record)
+	return answer
 
 def getRows(dbFile, tableName, col_names, frm, to):
 	pk_field = _getSrNoField(dbFile, tableName, col_names)
