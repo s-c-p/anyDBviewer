@@ -9,7 +9,7 @@ import background as bg
 @bottle.route("/")
 @bottle.route("/index")
 def index():
-	return bottle.template("index")
+	return bottle.template("view/index")
 
 @bottle.route("/chooseTable")
 def chooseTable():

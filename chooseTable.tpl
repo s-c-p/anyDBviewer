@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Choose a table</title>
+	<title>DBViewer | Choose a table.</title>
 </head>
 <body>
-	<form action="/displayTable?pageNum=1">
+	<form action="/displayTable">
 		<select name="tableName">
-			<option value="{{ tableList[0] }}">{{ tableList[0] }}</option>
-		% for x in tableList[1:]:
+		% for x in tableList:
 			<option value="{{ x }}">{{ x }}</option>
 		% end
 		</select>

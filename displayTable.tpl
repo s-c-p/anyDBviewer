@@ -1,7 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>DBViewer | Viewing page #{{ pageNum }} of {{ tableName }}</title>
+	<title>DBViewer | Page #{{ pageNum }} of {{ tableName }} table.</title>
+	<style type="text/css">
+table, th, td {
+    border: 1px solid black;
+}
+thead {
+	font-weight: bolder;
+	text-align: center;
+}
+	</style>
 </head>
 <body>
 	<p>Viewing data of table: <em>{{ tableName }}</em></p>
