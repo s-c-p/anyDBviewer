@@ -18,16 +18,13 @@
 	% end
 	</thead>
 	<tbody>
-    for aRow in table_body:
+    % for aRow in table_body:
         <tr>
-        for _ in aRow:
+        % for _ in aRow:
             <td> {{ _ }} </td>
-        end
-		</tr
-    end
-			{{ table_body }}
-		</pre>
-	</codettbody>
+        % end
+		</tr>
+	
     </table>
 </body>
 </html>
