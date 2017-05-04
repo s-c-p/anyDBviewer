@@ -24,7 +24,8 @@
             <td> {{ _ }} </td>
         % end
 		</tr>
-	
+	% end
+    </tbody>
     </table>
 </body>
 </html>
