@@ -2,6 +2,8 @@ import sys
 import sqlite3
 import subprocess
 
+import pytest
+
 import utils
 
 class SQLError(Exception):
@@ -25,11 +27,18 @@ def sqlCommandRunner(dbFile, command):
 	ans = str(x.stdout, "CP437")
 	return ans
 
-def test():
-	dotCommandRunner("chinook.db", ".tables")
-	try:	dotCommandRunner("chinook.db", ".tabul")
-	except SQLError as e:
-		if e:	print("Appropriate error was raised")
+def test_sqlCommandRunner():
+	# we are using the standard chinook.db availble online
+	# for practicing sql
+	table_names = sqlCommandRunner("chinook.db", ".tables")
+	table_names = table_names.split()
+	known_tables = \
+		[ "albums", "employees", "invoices", "playlists"
+		, "artists", "genres", "media_types", "tracks"
+		, "customers", "invoice_items", "playlist_track"]
+	assert known_tables == table_names
+	with pytest.raises(SQLError):
+		sqlCommandRunner("chinook.db", ".tabul")
 	return
 
 def getColNames(filePath, tableName):
@@ -38,10 +47,7 @@ def getColNames(filePath, tableName):
 	# bit.ly/2pwbDCP
 	with sqlite3.connect(filePath) as conn:
 		cur = conn.cursor()
-		cur.execute("SELECT * FROM {} LIMIT 1;".format(tableName))
-		# NOTE: sql injection vulnerablity, but using ? style instead
-		# of {} gave sqlite3.OperationalError and webpage fails with
-		# HTTP error 500
+		cur.execute("SELECT * FROM {} LIMIT 1;".format(tableName))              # NOTE: sql injection vulnerablity, but using ? style instead of {} gave sqlite3.OperationalError
 		col_names = [description_tuple[0] \
 			for description_tuple in cur.description]
 	return col_names
@@ -54,7 +60,7 @@ def _getSrNoField(filePath, tableName, fields):
 		selet table "playlist_track" and chunkSize 10 and proceed
 		DAYUMNN--- more than 10 results
 		see-- bit.ly/2pI1Bge
-		ANS-- use cur.execute, then ans = 
+		ANS-- use cur.execute, then ans =
 			[cur.fetchone for _ in range(chunkSize)]
 		store the value of ans[0] & ans[-1] and use it as offset info for
 		prev. and next fetch respectively
@@ -105,16 +111,11 @@ def getRows(dbFile, tableName, col_names, frm, to):
 	return data
 
 if __name__ == '__main__':
-	test()
+	test_sqlCommandRunner()
 
 
-# no reason why this should cause the highlighter to break
-#
-# a: lambda x=None: {key: val for key, val in (x if x is not None else [])}=42
+# python is wrong in reporting PRIMARY KEY of "playlist_track"
+# properly parse the output of ".schema tableName"
+# 	if CONSTRAIN and PRIMARY KEY occour in same line call special func
 
-
-"""
-python is wrong in reporting PRIMARY KEY of "playlist_track"
-properly parse the output of ".schema tableName"
-	if CONSTRAIN and PRIMARY KEY occour in same line call special func
-"""
+# use sqlite3.create_aggragate?
